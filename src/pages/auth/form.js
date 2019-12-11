@@ -6,6 +6,7 @@ import { CardActions, FullButton, Input } from './styles';
 export const authFormState = props => {
   const [user, setUser] = React.useState();
   const [password, setPassword] = React.useState();
+  const loading = props.loading;
 
   const form = {
     user,
@@ -24,12 +25,13 @@ export const authFormState = props => {
     button: {
       loading: props.loading,
       onPress: () => props.onSubmit(form)
-    }
+    },
+    loading
   };
 }
 
 const AuthForm = props => {
-  const { user, password, button } = authFormState(props);
+  const { user, password, button, loading } = authFormState(props);
 
   return (
     <Card>
@@ -41,6 +43,7 @@ const AuthForm = props => {
           label='Usuário'
           mode='outlined'
           autoCapitalize='none'
+          disabled={loading}
           {...user}
         />
 
@@ -49,6 +52,7 @@ const AuthForm = props => {
           mode='outlined'
           secureTextEntry
           autoCapitalize='none'
+          disabled={loading}
           {...password}
         />
       </Card.Content>
@@ -56,7 +60,8 @@ const AuthForm = props => {
       <CardActions >
         <FullButton
           mode='contained'
-          dark={false}
+          loading={loading}
+          disabled={loading}
           {...button}
         >
           Entrar
