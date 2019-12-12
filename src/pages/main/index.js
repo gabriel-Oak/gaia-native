@@ -1,38 +1,51 @@
 import React, { Component } from 'react';
-import { Appbar } from 'react-native-paper';
-import { createAppContainer, createSwitchNavigator } from 'react-navigation';
+import { createAppContainer } from 'react-navigation';
 import { createDrawerNavigator } from 'react-navigation-drawer';
-import { Text } from 'react-native';
 import HomePage from './home/';
-
-// import { Container } from './styles';
+import MenuIcon from '../../shared/assets/menu.svg';
+import { clearSession, getSession } from '../../shared/utils/auth';
+import { IconButton } from '../../shared/theme/buttons';
+import { connect } from "react-redux";
 
 const MainRoutes = createAppContainer(
-  createDrawerNavigator({
-    Home: HomePage
-  })
+  createDrawerNavigator(
+    {
+      Home: HomePage
+    },
+    {
+      drawerBackgroundColor: '#303030'
+    }
+  )
 );
 
-export default class MainRouter extends Component {
+class MainRouter extends Component {
+  constructor(props) {
+    super(props);
+    this.fethUser = this.fethUser.bind(this);
+    this.fethUser(props);
+  }
+
+  async fethUser(props) {
+    const session = await getSession();
+
+    if (!session || session.expired) {
+      return props.navigation.navigate('Auth');
+    }
+  }
+
   render() {
+    const { title } = this.props;
+    console.log(MainRoutes.router.getActionCreators().openDrawer());
+
     return (
-      <>
-        <Appbar.Header>
-        
-          <Appbar.Action onPress={() => { }}>
-            <Text>OI</Text>
-          </Appbar.Action>
-
-          <Appbar.Content
-            title='Title'
-          />
-
-          <Appbar.Action onPress={() => { }}>
-            <Text>Sair</Text>
-          </Appbar.Action>
-        </Appbar.Header>
-        <MainRoutes />
-      </>
+      <MainRoutes />
     );
   }
 }
+
+const mapStateToProps = state => {
+  const { mainReducer } = state;
+  return mainReducer;
+}
+
+export default connect(mapStateToProps)(MainRouter);
